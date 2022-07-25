@@ -24,14 +24,14 @@ async def update_company_director_us(request: Request = request) -> Response:
             parameters=raw_params,
         )
 
-        external_fiscal_tax = (
+        company_director = (
             await CompanyDataService.update_company_director_data_for_us(
                 company_director_request=company_director_request
             )
         )
 
         response = ResponseModel(
-            result=external_fiscal_tax,
+            result=company_director,
             success=True,
             code=InternalCode.SUCCESS,
             message="Register Updated.",
