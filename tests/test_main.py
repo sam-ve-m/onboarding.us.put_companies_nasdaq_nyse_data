@@ -11,33 +11,29 @@ from src.domain.exceptions.model import (
     InvalidStepError,
     InternalServerError,
 )
-from src.services.employ_data.service import CompanyDataService
+from src.services.company_data.service import CompanyDataService
 
 request_ok = {
     "is_company_director": True,
     "company_name": "Lalau",
-    "company_ticker": "LALA4"
+    "company_ticker": "LALA4",
 }
 requests_invalid = [
     {
         "is_company_director": True,
         "company_name": "Lalau",
     },
-{
-    "is_company_director": True,
-    "company_ticker": "LALA4"
-},
-{
-    "is_company_director": True,
-},
-{
-},
-{
-    "is_company_director": 10,
-},
-{
-    "company_director": 10,
-}
+    {"is_company_director": True, "company_ticker": "LALA4"},
+    {
+        "is_company_director": True,
+    },
+    {},
+    {
+        "is_company_director": 10,
+    },
+    {
+        "company_director": 10,
+    },
 ]
 
 decoded_jwt_ok = {
@@ -178,7 +174,9 @@ async def test_update_company_director_us_when_internal_server_error_occurs(
     decode_payload_mock,
     etria_mock,
 ):
-    update_company_director_us_residence_mock.side_effect = InternalServerError("errooou")
+    update_company_director_us_residence_mock.side_effect = InternalServerError(
+        "errooou"
+    )
     decode_payload_mock.return_value = (
         decoded_jwt_ok,
         HeimdallStatusResponses.SUCCESS,

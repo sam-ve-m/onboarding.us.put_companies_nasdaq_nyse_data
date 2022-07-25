@@ -2,9 +2,10 @@ from decouple import config
 from persephone_client import Persephone
 
 from src.domain.enums.persephone_queue import PersephoneQueue
-from src.domain.exceptions.model import InternalServerError
-from src.domain.models.request.model import CompanyDirector
-from src.repositories.step_validator.repository import StepValidator
+from src.domain.exceptions.model import InternalServerError, InvalidStepError
+from src.domain.models.request.model import CompanyDirectorRequest
+from src.domain.models.user_data.company_director.model import CompanyDirectorData
+from src.transport.user_step.transport import StepChecker
 from src.repositories.user.repository import UserRepository
 
 
@@ -28,18 +29,24 @@ class CompanyDataService:
 
     @classmethod
     async def update_company_director_data_for_us(
-        cls, company_director_data: CompanyDirector, payload: dict
+        cls, company_director_request: CompanyDirectorRequest
     ) -> None:
 
-        await StepValidator.validate_onboarding_step(
-            x_thebes_answer=payload["x_thebes_answer"]
+        user_step = await StepChecker.get_onboarding_step(
+            x_thebes_answer=company_director_request.x_thebes_answer
         )
+        if not user_step.is_in_correct_step():
+            raise InvalidStepError(
+                f"Step BR: {user_step.step_br} | Step US: {user_step.step_us}"
+            )
 
-        unique_id = payload["data"]["user"]["unique_id"]
-
-        user_is_company_director = company_director_data.is_company_director
-        user_is_company_director_of = company_director_data.company_name
-        company_ticker_that_user_is_director_of = company_director_data.company_ticker
+        company_director = company_director_request.company_director
+        company_director_data = CompanyDirectorData(
+            unique_id=company_director_request.unique_id,
+            is_company_director=company_director.is_company_director,
+            company_name=company_director.company_name,
+            company_ticker=company_director.company_ticker,
+        )
 
         (
             sent_to_persephone,
@@ -48,23 +55,16 @@ class CompanyDataService:
             topic=config("PERSEPHONE_TOPIC_USER"),
             partition=PersephoneQueue.USER_COMPANY_DIRECTOR_IN_US.value,
             message=cls.__model_company_director_data_to_persephone(
-                company_director=user_is_company_director,
-                user_is_company_director_of=user_is_company_director_of,
-                company_ticker_that_user_is_director_of=company_ticker_that_user_is_director_of,
-                unique_id=unique_id,
+                company_director=company_director_data.is_company_director,
+                user_is_company_director_of=company_director_data.company_name,
+                company_ticker_that_user_is_director_of=company_director_data.company_ticker,
+                unique_id=company_director_data.unique_id,
             ),
             schema_name="user_company_director_us_schema",
         )
         if sent_to_persephone is False:
             raise InternalServerError("Error sending data to Persephone")
 
-        was_updated = await UserRepository.update_user(
-            unique_id=unique_id,
-            new={
-                "external_exchange_requirements.us.is_company_director": user_is_company_director,
-                "external_exchange_requirements.us.is_company_director_of": user_is_company_director_of,
-                "external_exchange_requirements.us.company_ticker_that_user_is_director_of": company_ticker_that_user_is_director_of,
-            },
-        )
+        was_updated = await UserRepository.update_user(user_data=company_director_data)
         if not was_updated:
             raise InternalServerError("Error updating user data")

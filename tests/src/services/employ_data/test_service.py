@@ -4,17 +4,13 @@ import pytest
 from persephone_client import Persephone
 
 from src.domain.exceptions.model import InternalServerError
-from src.domain.models.request.model import CompanyDirector
-from src.repositories.step_validator.repository import StepValidator
+from src.domain.models.request.model import CompanyDirectorModel
+from src.transport.user_step.transport import StepChecker
 from src.repositories.user.repository import UserRepository
-from src.services.employ_data.service import CompanyDataService
+from src.services.company_data.service import CompanyDataService
 
-tax_residence_model_dummy = CompanyDirector(
-    **{
-    "is_company_director": True,
-    "company_name": "Lalau",
-    "company_ticker": "LALA4"
-}
+tax_residence_model_dummy = CompanyDirectorModel(
+    **{"is_company_director": True, "company_name": "Lalau", "company_ticker": "LALA4"}
 )
 
 payload_dummy = {
@@ -35,18 +31,18 @@ def test___model_company_director_data_to_persephone():
         unique_id,
     )
     expected_result = {
-            "unique_id": unique_id,
-            "company_director": company_director,
-            "user_is_company_director_of": user_is_company_director_of,
-            "company_ticker_that_user_is_director_of": company_ticker_that_user_is_director_of,
-        }
+        "unique_id": unique_id,
+        "company_director": company_director,
+        "user_is_company_director_of": user_is_company_director_of,
+        "company_ticker_that_user_is_director_of": company_ticker_that_user_is_director_of,
+    }
     assert result == expected_result
 
 
 @pytest.mark.asyncio
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
-@patch.object(StepValidator, "validate_onboarding_step")
+@patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us(
     step_validator_mock, persephone_client_mock, update_user_mock
 ):
@@ -66,7 +62,7 @@ async def test_update_company_director_data_for_us(
 @pytest.mark.asyncio
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
-@patch.object(StepValidator, "validate_onboarding_step")
+@patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us_when_cant_send_to_persephone(
     step_validator_mock, persephone_client_mock, update_user_mock
 ):
@@ -85,7 +81,7 @@ async def test_update_company_director_data_for_us_when_cant_send_to_persephone(
 @pytest.mark.asyncio
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
-@patch.object(StepValidator, "validate_onboarding_step")
+@patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us_when_cant_update_user_register(
     step_validator_mock, persephone_client_mock, update_user_mock
 ):
