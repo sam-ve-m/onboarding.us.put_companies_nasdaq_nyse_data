@@ -14,16 +14,13 @@ class CompanyDataService:
 
     @staticmethod
     def __model_company_director_data_to_persephone(
-        company_director: bool,
-        user_is_company_director_of: str,
-        company_ticker_that_user_is_director_of: str,
-        unique_id: str,
+        company_director_data: CompanyDirectorData
     ) -> dict:
         data = {
-            "unique_id": unique_id,
-            "company_director": company_director,
-            "user_is_company_director_of": user_is_company_director_of,
-            "company_ticker_that_user_is_director_of": company_ticker_that_user_is_director_of,
+            "unique_id": company_director_data.unique_id,
+            "company_director": company_director_data.is_company_director,
+            "user_is_company_director_of": company_director_data.company_name,
+            "company_ticker_that_user_is_director_of": company_director_data.company_ticker,
         }
         return data
 
@@ -55,16 +52,13 @@ class CompanyDataService:
             topic=config("PERSEPHONE_TOPIC_USER"),
             partition=PersephoneQueue.USER_COMPANY_DIRECTOR_IN_US.value,
             message=cls.__model_company_director_data_to_persephone(
-                company_director=company_director_data.is_company_director,
-                user_is_company_director_of=company_director_data.company_name,
-                company_ticker_that_user_is_director_of=company_director_data.company_ticker,
-                unique_id=company_director_data.unique_id,
+                company_director_data=company_director_data,
             ),
             schema_name="user_company_director_us_schema",
         )
         if sent_to_persephone is False:
             raise InternalServerError("Error sending data to Persephone")
 
-        was_updated = await UserRepository.update_user(user_data=company_director_data)
-        if not was_updated:
+        user_has_been_updated = await UserRepository.update_user(user_data=company_director_data)
+        if not user_has_been_updated:
             raise InternalServerError("Error updating user data")

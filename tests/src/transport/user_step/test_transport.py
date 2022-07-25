@@ -4,6 +4,7 @@ import pytest
 from etria_logger import Gladsheim
 
 from src.domain.exceptions.model import InvalidStepError
+from src.domain.models.user_data.onboarding_step.model import UserOnboardingStep
 from src.transport.user_step.transport import StepChecker
 
 
@@ -31,31 +32,20 @@ class SessionMock:
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
 @patch.object(StepChecker, "get_session")
-async def test_validate_step_br_when_is_correct_step(
+async def test__get_step_br(
     get_session_mock, etria_error_mock
 ):
     steps_response_dummy = {"result": {"current_step": "finished"}}
     get_session_mock.return_value = SessionMock(steps_response_dummy)
     result = await StepChecker._get_step_br("x-thebes-answer")
-    expected_result = True
+    expected_result = "finished"
     assert result == expected_result
 
 
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
 @patch.object(StepChecker, "get_session")
-async def test_validate_step_br_when_is_wrong_step(get_session_mock, etria_error_mock):
-    steps_response_dummy = {"result": {"current_step": "some_step"}}
-    get_session_mock.return_value = SessionMock(steps_response_dummy)
-    result = await StepChecker._get_step_br("x-thebes-answer")
-    expected_result = False
-    assert result == expected_result
-
-
-@pytest.mark.asyncio
-@patch.object(Gladsheim, "error")
-@patch.object(StepChecker, "get_session")
-async def test_validate_step_br_when_exception_occurs(
+async def test__get_step_br_when_exception_occurs(
     get_session_mock, etria_error_mock
 ):
     get_session_mock.side_effect = Exception()
@@ -67,31 +57,20 @@ async def test_validate_step_br_when_exception_occurs(
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
 @patch.object(StepChecker, "get_session")
-async def test_validate_step_us_when_is_correct_step(
+async def test__get_step_us(
     get_session_mock, etria_error_mock
 ):
     steps_response_dummy = {"result": {"current_step": "company_director"}}
     get_session_mock.return_value = SessionMock(steps_response_dummy)
     result = await StepChecker._get_step_us("x-thebes-answer")
-    expected_result = True
+    expected_result = "company_director"
     assert result == expected_result
 
 
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
 @patch.object(StepChecker, "get_session")
-async def test_validate_step_us_when_is_wrong_step(get_session_mock, etria_error_mock):
-    steps_response_dummy = {"result": {"current_step": "some_step"}}
-    get_session_mock.return_value = SessionMock(steps_response_dummy)
-    result = await StepChecker._get_step_us("x-thebes-answer")
-    expected_result = False
-    assert result == expected_result
-
-
-@pytest.mark.asyncio
-@patch.object(Gladsheim, "error")
-@patch.object(StepChecker, "get_session")
-async def test_validate_step_us_when_exception_occurs(
+async def test__get_step_us_when_exception_occurs(
     get_session_mock, etria_error_mock
 ):
     get_session_mock.side_effect = Exception()
@@ -101,21 +80,22 @@ async def test_validate_step_us_when_exception_occurs(
 
 
 @pytest.mark.asyncio
-@patch.object(StepChecker, "_get_step_br", return_value=True)
-@patch.object(StepChecker, "_get_step_us", return_value=True)
-async def test_validate_onboarding_step_when_all_steps_are_true(
+@patch.object(StepChecker, "_get_step_br", return_value="finished")
+@patch.object(StepChecker, "_get_step_us", return_value='company_director')
+async def test_get_onboarding_step_when_all_steps_are_true(
     steps_br_mock, steps_us_mock
 ):
     result = await StepChecker.get_onboarding_step("x-thebes-answer")
-    expected_result = None
-    assert result == expected_result
+    assert isinstance(result, UserOnboardingStep)
+    assert result.is_in_correct_step() is True
 
 
 @pytest.mark.asyncio
-@patch.object(StepChecker, "_get_step_br", return_value=False)
-@patch.object(StepChecker, "_get_step_us", return_value=True)
-async def test_validate_onboarding_step_when_one_step_is_false(
+@patch.object(StepChecker, "_get_step_br", return_value="finished")
+@patch.object(StepChecker, "_get_step_us", return_value="some_step")
+async def test_get_onboarding_step_when_one_step_is_false(
     steps_br_mock, steps_us_mock
 ):
-    with pytest.raises(InvalidStepError):
-        result = await StepChecker.get_onboarding_step("x-thebes-answer")
+    result = await StepChecker.get_onboarding_step("x-thebes-answer")
+    assert isinstance(result, UserOnboardingStep)
+    assert result.is_in_correct_step() is False
