@@ -1,0 +1,23 @@
+apiVersion: fission.io/v1
+kind: HTTPTrigger
+metadata:
+  creationTimestamp: null
+  name: route-put-company-director-us
+  namespace: default
+spec:
+  createingress: false
+  functionref:
+    functionweights: null
+    name: fn-put-company-director-us
+    type: name
+  host: ""
+  ingressconfig:
+    annotations: null
+    host: '*'
+    path: /onboarding/company_director_us
+    tls: ""
+  method: ""
+  methods:
+  - PUT
+  prefix: ""
+  relativeurl: /onboarding/company_director_us
