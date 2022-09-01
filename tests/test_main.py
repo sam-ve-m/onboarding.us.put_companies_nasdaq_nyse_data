@@ -1,17 +1,20 @@
 from unittest.mock import patch
 
+from decouple import Config
 from etria_logger import Gladsheim
 from flask import Flask
 from heimdall_client.bifrost import Heimdall, HeimdallStatusResponses
 from pytest import mark
 from werkzeug.test import Headers
 
-from main import update_company_director_us
 from src.domain.exceptions.model import (
     InvalidStepError,
     InternalServerError,
 )
-from src.services.company_data.service import CompanyDataService
+
+with patch.object(Config, "__call__"):
+    from main import update_company_director_us
+    from src.services.company_data.service import CompanyDataService
 
 request_ok = {
     "is_company_director": True,

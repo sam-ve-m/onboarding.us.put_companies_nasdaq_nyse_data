@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+from decouple import Config
 from etria_logger import Gladsheim
 
 from src.domain.exceptions.model import InvalidStepError
@@ -31,9 +32,10 @@ class SessionMock:
 
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
+@patch.object(Config, "__call__")
 @patch.object(StepChecker, "get_session")
 async def test__get_step_br(
-    get_session_mock, etria_error_mock
+    get_session_mock, mocked_env, etria_error_mock
 ):
     steps_response_dummy = {"result": {"current_step": "finished"}}
     get_session_mock.return_value = SessionMock(steps_response_dummy)
@@ -44,9 +46,10 @@ async def test__get_step_br(
 
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
+@patch.object(Config, "__call__")
 @patch.object(StepChecker, "get_session")
 async def test__get_step_br_when_exception_occurs(
-    get_session_mock, etria_error_mock
+    get_session_mock, mocked_env, etria_error_mock
 ):
     get_session_mock.side_effect = Exception()
     with pytest.raises(Exception):
@@ -56,9 +59,10 @@ async def test__get_step_br_when_exception_occurs(
 
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
+@patch.object(Config, "__call__")
 @patch.object(StepChecker, "get_session")
 async def test__get_step_us(
-    get_session_mock, etria_error_mock
+    get_session_mock, mocked_env, etria_error_mock
 ):
     steps_response_dummy = {"result": {"current_step": "company_director"}}
     get_session_mock.return_value = SessionMock(steps_response_dummy)
@@ -69,9 +73,10 @@ async def test__get_step_us(
 
 @pytest.mark.asyncio
 @patch.object(Gladsheim, "error")
+@patch.object(Config, "__call__")
 @patch.object(StepChecker, "get_session")
 async def test__get_step_us_when_exception_occurs(
-    get_session_mock, etria_error_mock
+    get_session_mock, mocked_env, etria_error_mock
 ):
     get_session_mock.side_effect = Exception()
     with pytest.raises(Exception):

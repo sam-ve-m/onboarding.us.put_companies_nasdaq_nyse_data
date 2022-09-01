@@ -27,7 +27,7 @@ class CompanyDataService:
     @classmethod
     async def update_company_director_data_for_us(
         cls, company_director_request: CompanyDirectorRequest
-    ) -> None:
+    ):
 
         user_step = await StepChecker.get_onboarding_step(
             x_thebes_answer=company_director_request.x_thebes_answer
