@@ -1,10 +1,13 @@
 from unittest.mock import patch, AsyncMock
 
+from decouple import Config
 from etria_logger import Gladsheim
-from pytest import mark, raises
+from pytest import mark
 
 from src.domain.models.user_data.model import UserData
-from src.repositories.user.repository import UserRepository
+
+with patch.object(Config, "__call__"):
+    from src.repositories.user.repository import UserRepository
 
 
 class UserDataDummy(UserData):

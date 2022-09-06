@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+from decouple import Config
 from persephone_client import Persephone
 
 from src.domain.exceptions.model import InternalServerError, InvalidStepError
@@ -40,11 +41,12 @@ def test___model_company_director_data_to_persephone():
 
 
 @pytest.mark.asyncio
+@patch.object(Config, "__call__")
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
 @patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us(
-    get_onboarding_step_mock, persephone_client_mock, update_user_mock
+    get_onboarding_step_mock, persephone_client_mock, update_user_mock, mocked_env
 ):
     get_onboarding_step_mock.return_value = onboarding_step_correct_stub
     persephone_client_mock.return_value = (True, 0)
@@ -61,11 +63,12 @@ async def test_update_company_director_data_for_us(
 
 
 @pytest.mark.asyncio
+@patch.object(Config, "__call__")
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
 @patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us_when_user_is_in_wrong_step(
-    get_onboarding_step_mock, persephone_client_mock, update_user_mock
+    get_onboarding_step_mock, persephone_client_mock, update_user_mock, mocked_env
 ):
     get_onboarding_step_mock.return_value = onboarding_step_incorrect_stub
     persephone_client_mock.return_value = (True, 0)
@@ -81,11 +84,12 @@ async def test_update_company_director_data_for_us_when_user_is_in_wrong_step(
 
 
 @pytest.mark.asyncio
+@patch.object(Config, "__call__")
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
 @patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us_when_cant_send_to_persephone(
-    get_onboarding_step_mock, persephone_client_mock, update_user_mock
+    get_onboarding_step_mock, persephone_client_mock, update_user_mock, mocked_env
 ):
     get_onboarding_step_mock.return_value = onboarding_step_correct_stub
     persephone_client_mock.return_value = (False, 0)
@@ -101,11 +105,12 @@ async def test_update_company_director_data_for_us_when_cant_send_to_persephone(
 
 
 @pytest.mark.asyncio
+@patch.object(Config, "__call__")
 @patch.object(UserRepository, "update_user")
 @patch.object(Persephone, "send_to_persephone")
 @patch.object(StepChecker, "get_onboarding_step")
 async def test_update_company_director_data_for_us_when_cant_update_user_register(
-    get_onboarding_step_mock, persephone_client_mock, update_user_mock
+    get_onboarding_step_mock, persephone_client_mock, update_user_mock, mocked_env
 ):
     get_onboarding_step_mock.return_value = onboarding_step_correct_stub
     persephone_client_mock.return_value = (True, 0)

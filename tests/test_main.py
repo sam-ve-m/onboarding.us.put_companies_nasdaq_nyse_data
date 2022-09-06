@@ -1,17 +1,22 @@
-from unittest.mock import patch
-
-from etria_logger import Gladsheim
-from flask import Flask
-from heimdall_client.bifrost import Heimdall, HeimdallStatusResponses
+import logging.config
 from pytest import mark
+from flask import Flask
+from unittest.mock import patch
 from werkzeug.test import Headers
+from decouple import RepositoryEnv, Config
 
-from main import update_company_director_us
-from src.domain.exceptions.model import (
-    InvalidStepError,
-    InternalServerError,
-)
-from src.services.company_data.service import CompanyDataService
+with patch.object(RepositoryEnv, "__init__", return_value=None):
+    with patch.object(Config, "__init__", return_value=None):
+        with patch.object(Config, "__call__"):
+            with patch.object(logging.config, "dictConfig"):
+                from etria_logger import Gladsheim
+                from heimdall_client.bifrost import Heimdall, HeimdallStatusResponses
+                from main import update_company_director_us
+                from src.services.company_data.service import CompanyDataService
+                from src.domain.exceptions.model import (
+                    InvalidStepError,
+                    InternalServerError,
+                )
 
 request_ok = {
     "is_company_director": True,
