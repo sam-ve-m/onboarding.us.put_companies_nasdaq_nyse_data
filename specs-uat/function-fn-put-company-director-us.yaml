@@ -51,5 +51,5 @@ spec:
     packageref:
       name: fn-put-company-director-us-73ffe092-0a48-4bd3-b3c5-aa6d21115f85
       namespace: default
-  requestsPerPod: 1
+  requestsPerPod: 10000
   resources: {}
