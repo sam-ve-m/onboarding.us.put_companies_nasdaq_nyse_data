@@ -1,0 +1,55 @@
+include:
+- ./func/*
+kind: ArchiveUploadSpec
+name: func-D0cQ
+
+---
+apiVersion: fission.io/v1
+kind: Package
+metadata:
+  creationTimestamp: null
+  name: fn-put-company-director-us-73ffe092-0a48-4bd3-b3c5-aa6d21115f85
+  namespace: default
+spec:
+  deployment:
+    checksum: {}
+  environment:
+    name: env-put-company-director-us
+    namespace: default
+  source:
+    checksum: {}
+    type: url
+    url: archive://func-D0cQ
+status:
+  buildstatus: pending
+  lastUpdateTimestamp: "2022-07-21T18:15:07Z"
+
+---
+apiVersion: fission.io/v1
+kind: Function
+metadata:
+  creationTimestamp: null
+  name: fn-put-company-director-us
+  namespace: default
+spec:
+  InvokeStrategy:
+    ExecutionStrategy:
+      ExecutorType: newdeploy
+      MaxScale: 3
+      MinScale: 1
+      SpecializationTimeout: 120
+      TargetCPUPercent: 80
+    StrategyType: execution
+  concurrency: 500
+  environment:
+    name: env-put-company-director-us
+    namespace: default
+  functionTimeout: 60
+  idletimeout: 120
+  package:
+    functionName: main.update_company_director_us
+    packageref:
+      name: fn-put-company-director-us-73ffe092-0a48-4bd3-b3c5-aa6d21115f85
+      namespace: default
+  requestsPerPod: 10000
+  resources: {}
