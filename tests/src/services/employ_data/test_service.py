@@ -16,12 +16,16 @@ company_director_model_dummy = CompanyDirectorModel(
     **{"is_company_director": True, "company_name": "Lalau", "company_ticker": "LALA4"}
 )
 
-company_director_request_dummy = CompanyDirectorRequest(x_thebes_answer="x_thebes_answer", unique_id="unique_id", company_director=company_director_model_dummy)
+company_director_request_dummy = CompanyDirectorRequest(
+    x_thebes_answer="x_thebes_answer",
+    unique_id="unique_id",
+    company_director=company_director_model_dummy,
+)
 company_director_data_dummy = CompanyDirectorData(
-            unique_id=company_director_request_dummy.unique_id,
-            is_company_director=company_director_model_dummy.is_company_director,
-            company_name=company_director_model_dummy.company_name,
-            company_ticker=company_director_model_dummy.company_ticker
+    unique_id=company_director_request_dummy.unique_id,
+    is_company_director=company_director_model_dummy.is_company_director,
+    company_name=company_director_model_dummy.company_name,
+    company_ticker=company_director_model_dummy.company_ticker,
 )
 onboarding_step_correct_stub = UserOnboardingStep("finished", "company_director")
 onboarding_step_incorrect_stub = UserOnboardingStep("finished", "some_step")

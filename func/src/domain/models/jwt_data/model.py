@@ -9,9 +9,7 @@ class Jwt:
 
     @staticmethod
     async def decode_and_validate_jwt(jwt: str):
-        jwt_content, heimdall_status = await Heimdall.decode_payload(
-            jwt=jwt
-        )
+        jwt_content, heimdall_status = await Heimdall.decode_payload(jwt=jwt)
         if heimdall_status != HeimdallStatusResponses.SUCCESS:
             raise UnauthorizedError()
         return jwt_content

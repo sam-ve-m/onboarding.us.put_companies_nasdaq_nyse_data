@@ -24,10 +24,8 @@ async def update_company_director_us(request: Request = request) -> Response:
             parameters=raw_params,
         )
 
-        company_director = (
-            await CompanyDataService.update_company_director_data_for_us(
-                company_director_request=company_director_request
-            )
+        company_director = await CompanyDataService.update_company_director_data_for_us(
+            company_director_request=company_director_request
         )
 
         response = ResponseModel(

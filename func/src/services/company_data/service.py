@@ -14,7 +14,7 @@ class CompanyDataService:
 
     @staticmethod
     def __model_company_director_data_to_persephone(
-        company_director_data: CompanyDirectorData
+        company_director_data: CompanyDirectorData,
     ) -> dict:
         data = {
             "unique_id": company_director_data.unique_id,
@@ -59,6 +59,8 @@ class CompanyDataService:
         if sent_to_persephone is False:
             raise InternalServerError("Error sending data to Persephone")
 
-        user_has_been_updated = await UserRepository.update_user(user_data=company_director_data)
+        user_has_been_updated = await UserRepository.update_user(
+            user_data=company_director_data
+        )
         if not user_has_been_updated:
             raise InternalServerError("Error updating user data")

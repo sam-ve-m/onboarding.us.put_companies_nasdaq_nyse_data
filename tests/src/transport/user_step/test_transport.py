@@ -34,9 +34,7 @@ class SessionMock:
 @patch.object(Gladsheim, "error")
 @patch.object(Config, "__call__")
 @patch.object(StepChecker, "get_session")
-async def test__get_step_br(
-    get_session_mock, mocked_env, etria_error_mock
-):
+async def test__get_step_br(get_session_mock, mocked_env, etria_error_mock):
     steps_response_dummy = {"result": {"current_step": "finished"}}
     get_session_mock.return_value = SessionMock(steps_response_dummy)
     result = await StepChecker._get_step_br("x-thebes-answer")
@@ -61,9 +59,7 @@ async def test__get_step_br_when_exception_occurs(
 @patch.object(Gladsheim, "error")
 @patch.object(Config, "__call__")
 @patch.object(StepChecker, "get_session")
-async def test__get_step_us(
-    get_session_mock, mocked_env, etria_error_mock
-):
+async def test__get_step_us(get_session_mock, mocked_env, etria_error_mock):
     steps_response_dummy = {"result": {"current_step": "company_director"}}
     get_session_mock.return_value = SessionMock(steps_response_dummy)
     result = await StepChecker._get_step_us("x-thebes-answer")
@@ -86,7 +82,7 @@ async def test__get_step_us_when_exception_occurs(
 
 @pytest.mark.asyncio
 @patch.object(StepChecker, "_get_step_br", return_value="finished")
-@patch.object(StepChecker, "_get_step_us", return_value='company_director')
+@patch.object(StepChecker, "_get_step_us", return_value="company_director")
 async def test_get_onboarding_step_when_all_steps_are_true(
     steps_br_mock, steps_us_mock
 ):
@@ -98,9 +94,7 @@ async def test_get_onboarding_step_when_all_steps_are_true(
 @pytest.mark.asyncio
 @patch.object(StepChecker, "_get_step_br", return_value="finished")
 @patch.object(StepChecker, "_get_step_us", return_value="some_step")
-async def test_get_onboarding_step_when_one_step_is_false(
-    steps_br_mock, steps_us_mock
-):
+async def test_get_onboarding_step_when_one_step_is_false(steps_br_mock, steps_us_mock):
     result = await StepChecker.get_onboarding_step("x-thebes-answer")
     assert isinstance(result, UserOnboardingStep)
     assert result.is_in_correct_step() is False

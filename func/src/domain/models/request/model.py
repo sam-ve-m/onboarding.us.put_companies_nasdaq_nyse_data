@@ -28,7 +28,12 @@ class CompanyDirectorModel(BaseModel):
 
 
 class CompanyDirectorRequest:
-    def __init__(self, x_thebes_answer: str, unique_id: str, company_director: CompanyDirectorModel):
+    def __init__(
+        self,
+        x_thebes_answer: str,
+        unique_id: str,
+        company_director: CompanyDirectorModel,
+    ):
         self.x_thebes_answer = x_thebes_answer
         self.unique_id = unique_id
         self.company_director = company_director
@@ -37,4 +42,8 @@ class CompanyDirectorRequest:
     async def build(cls, x_thebes_answer: str, parameters: dict):
         jwt = await Jwt.build(jwt=x_thebes_answer)
         company_director = CompanyDirectorModel(**parameters)
-        return cls(x_thebes_answer=x_thebes_answer, unique_id=jwt.unique_id, company_director=company_director)
+        return cls(
+            x_thebes_answer=x_thebes_answer,
+            unique_id=jwt.unique_id,
+            company_director=company_director,
+        )
