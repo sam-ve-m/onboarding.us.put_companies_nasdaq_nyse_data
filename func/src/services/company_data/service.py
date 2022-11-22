@@ -5,6 +5,7 @@ from src.domain.enums.persephone_queue import PersephoneQueue
 from src.domain.exceptions.model import InternalServerError, InvalidStepError
 from src.domain.models.request.model import CompanyDirectorRequest
 from src.domain.models.user_data.company_director.model import CompanyDirectorData
+from src.domain.models.user_data.device_info.model import DeviceInfo
 from src.transport.user_step.transport import StepChecker
 from src.repositories.user.repository import UserRepository
 
@@ -14,13 +15,15 @@ class CompanyDataService:
 
     @staticmethod
     def __model_company_director_data_to_persephone(
-        company_director_data: CompanyDirectorData
+        company_director_data: CompanyDirectorData, device_info: DeviceInfo
     ) -> dict:
         data = {
             "unique_id": company_director_data.unique_id,
             "company_director": company_director_data.is_company_director,
             "user_is_company_director_of": company_director_data.company_name,
             "company_ticker_that_user_is_director_of": company_director_data.company_ticker,
+            "device_info": device_info.device_info,
+            "device_id": device_info.device_id,
         }
         return data
 
@@ -53,12 +56,15 @@ class CompanyDataService:
             partition=PersephoneQueue.USER_COMPANY_DIRECTOR_IN_US.value,
             message=cls.__model_company_director_data_to_persephone(
                 company_director_data=company_director_data,
+                device_info=company_director_request.device_info,
             ),
             schema_name="user_company_director_us_schema",
         )
         if sent_to_persephone is False:
             raise InternalServerError("Error sending data to Persephone")
 
-        user_has_been_updated = await UserRepository.update_user(user_data=company_director_data)
+        user_has_been_updated = await UserRepository.update_user(
+            user_data=company_director_data
+        )
         if not user_has_been_updated:
             raise InternalServerError("Error updating user data")

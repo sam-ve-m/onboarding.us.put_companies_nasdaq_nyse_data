@@ -7,6 +7,7 @@ from persephone_client import Persephone
 from src.domain.exceptions.model import InternalServerError, InvalidStepError
 from src.domain.models.request.model import CompanyDirectorModel, CompanyDirectorRequest
 from src.domain.models.user_data.company_director.model import CompanyDirectorData
+from src.domain.models.user_data.device_info.model import DeviceInfo
 from src.domain.models.user_data.onboarding_step.model import UserOnboardingStep
 from src.transport.user_step.transport import StepChecker
 from src.repositories.user.repository import UserRepository
@@ -15,13 +16,19 @@ from src.services.company_data.service import CompanyDataService
 company_director_model_dummy = CompanyDirectorModel(
     **{"is_company_director": True, "company_name": "Lalau", "company_ticker": "LALA4"}
 )
+stub_device_info = DeviceInfo({"precision": 1}, "")
 
-company_director_request_dummy = CompanyDirectorRequest(x_thebes_answer="x_thebes_answer", unique_id="unique_id", company_director=company_director_model_dummy)
+company_director_request_dummy = CompanyDirectorRequest(
+    x_thebes_answer="x_thebes_answer",
+    unique_id="unique_id",
+    company_director=company_director_model_dummy,
+    device_info=stub_device_info
+)
 company_director_data_dummy = CompanyDirectorData(
-            unique_id=company_director_request_dummy.unique_id,
-            is_company_director=company_director_model_dummy.is_company_director,
-            company_name=company_director_model_dummy.company_name,
-            company_ticker=company_director_model_dummy.company_ticker
+    unique_id=company_director_request_dummy.unique_id,
+    is_company_director=company_director_model_dummy.is_company_director,
+    company_name=company_director_model_dummy.company_name,
+    company_ticker=company_director_model_dummy.company_ticker,
 )
 onboarding_step_correct_stub = UserOnboardingStep("finished", "company_director")
 onboarding_step_incorrect_stub = UserOnboardingStep("finished", "some_step")
@@ -29,13 +36,16 @@ onboarding_step_incorrect_stub = UserOnboardingStep("finished", "some_step")
 
 def test___model_company_director_data_to_persephone():
     result = CompanyDataService._CompanyDataService__model_company_director_data_to_persephone(
-        company_director_data_dummy
+        company_director_data_dummy,
+        stub_device_info
     )
     expected_result = {
         "unique_id": company_director_data_dummy.unique_id,
         "company_director": company_director_data_dummy.is_company_director,
         "user_is_company_director_of": company_director_data_dummy.company_name,
         "company_ticker_that_user_is_director_of": company_director_data_dummy.company_ticker,
+        "device_info": stub_device_info.device_info,
+        "device_id": stub_device_info.device_id
     }
     assert result == expected_result
 
