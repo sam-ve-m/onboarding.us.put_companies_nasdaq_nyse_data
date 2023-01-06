@@ -4,10 +4,10 @@ from decouple import Config
 from etria_logger import Gladsheim
 from pytest import mark
 
-from src.domain.models.user_data.model import UserData
+from func.src.domain.models.user_data.model import UserData
 
 with patch.object(Config, "__call__"):
-    from src.repositories.user.repository import UserRepository
+    from func.src.repositories.user.repository import UserRepository
 
 
 class UserDataDummy(UserData):

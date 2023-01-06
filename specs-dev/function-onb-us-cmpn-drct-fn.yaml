@@ -1,35 +1,35 @@
 include:
-- ./func/*
+- fission.py
 kind: ArchiveUploadSpec
-name: func-D0cQ
+name: fission-py-vVKa
 
 ---
 apiVersion: fission.io/v1
 kind: Package
 metadata:
   creationTimestamp: null
-  name: fn-put-company-director-us-73ffe092-0a48-4bd3-b3c5-aa6d21115f85
+  name: onb-us-cmpn-drct-fn-ea245518-e70c-4012-a10c-ee63ebe020ae
   namespace: default
 spec:
   deployment:
     checksum: {}
+    type: url
+    url: archive://fission-py-vVKa
   environment:
-    name: env-put-company-director-us
+    name: onb-us-cmpn-drct-env
     namespace: default
   source:
     checksum: {}
-    type: url
-    url: archive://func-D0cQ
 status:
-  buildstatus: pending
-  lastUpdateTimestamp: "2022-07-21T18:15:07Z"
+  buildstatus: none
+  lastUpdateTimestamp: "2023-01-06T13:00:25Z"
 
 ---
 apiVersion: fission.io/v1
 kind: Function
 metadata:
   creationTimestamp: null
-  name: fn-put-company-director-us
+  name: onb-us-cmpn-drct-fn
   namespace: default
 spec:
   InvokeStrategy:
@@ -38,18 +38,24 @@ spec:
       MaxScale: 3
       MinScale: 1
       SpecializationTimeout: 120
-      TargetCPUPercent: 80
+      TargetCPUPercent: 0
+      hpaMetrics:
+      - resource:
+          name: cpu
+          target:
+            averageUtilization: 80
+            type: Utilization
+        type: Resource
     StrategyType: execution
   concurrency: 500
   environment:
-    name: env-put-company-director-us
+    name: onb-us-cmpn-drct-env
     namespace: default
   functionTimeout: 60
   idletimeout: 120
   package:
-    functionName: main.update_company_director_us
     packageref:
-      name: fn-put-company-director-us-73ffe092-0a48-4bd3-b3c5-aa6d21115f85
+      name: onb-us-cmpn-drct-fn-ea245518-e70c-4012-a10c-ee63ebe020ae
       namespace: default
   requestsPerPod: 10000
   resources: {}
