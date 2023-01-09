@@ -4,4 +4,4 @@
 apiVersion: fission.io/v1
 kind: DeploymentConfig
 name: onboarding-us-put-companies-nasdaq-nyse-data
-uid: 69c6a376-1c01-4413-a51b-57c7bae37138
+uid: 4ff6c4df-8198-43f5-8867-580b21b1c80a

@@ -4,14 +4,14 @@ import pytest
 from decouple import Config
 from persephone_client import Persephone
 
-from src.domain.exceptions.model import InternalServerError, InvalidStepError
-from src.domain.models.request.model import CompanyDirectorModel, CompanyDirectorRequest
-from src.domain.models.user_data.company_director.model import CompanyDirectorData
-from src.domain.models.user_data.device_info.model import DeviceInfo
-from src.domain.models.user_data.onboarding_step.model import UserOnboardingStep
-from src.transport.user_step.transport import StepChecker
-from src.repositories.user.repository import UserRepository
-from src.services.company_data.service import CompanyDataService
+from func.src.domain.exceptions.model import InternalServerError, InvalidStepError
+from func.src.domain.models.request.model import CompanyDirectorModel, CompanyDirectorRequest
+from func.src.domain.models.user_data.company_director.model import CompanyDirectorData
+from func.src.domain.models.user_data.device_info.model import DeviceInfo
+from func.src.domain.models.user_data.onboarding_step.model import UserOnboardingStep
+from func.src.transport.user_step.transport import StepChecker
+from func.src.repositories.user.repository import UserRepository
+from func.src.services.company_data.service import CompanyDataService
 
 company_director_model_dummy = CompanyDirectorModel(
     **{"is_company_director": True, "company_name": "Lalau", "company_ticker": "LALA4"}
